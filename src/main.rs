@@ -16,8 +16,22 @@ enum Route {
 
 fn switch(routes: &Route) -> Html {
     match routes {
-        Route::CreateQuestions => html!(<div class="pf-u-p-xl"><Stack gutter=true><CreateQuestions/></Stack></div>),
-        Route::ViewQuestions {session} => html!(<div class="pf-u-p-xl"><Stack gutter=true><ViewQuestions session={session.clone()}/></Stack></div>),
+        Route::CreateQuestions => html!(
+            <div class="pf-u-p-xl">
+                <Stack gutter=true>
+                    <CreateQuestions/>
+                    <StackItem>
+                        <Button icon={Icon::PlusCircleIcon} label="Add" variant={Variant::Primary}/>
+                    </StackItem>
+                </Stack>
+            </div>),
+        Route::ViewQuestions {session} => html!(
+            <div class="pf-u-p-xl">
+                <Stack gutter=true>
+                    <ViewQuestions session={session.clone()}/>
+                </Stack>
+            </div>
+        ),
     }
 }
 
