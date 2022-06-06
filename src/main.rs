@@ -2,9 +2,11 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use patternfly_yew::*;
 
+// mod questionnaire;
 mod question;
 mod answer;
 use question::{ViewQuestions, CreateQuestions};
+// use questionnaire::{Questionnaire};
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -20,15 +22,13 @@ fn switch(routes: &Route) -> Html {
             <div class="pf-u-p-xl">
                 <Stack gutter=true>
                     <CreateQuestions/>
-                    <StackItem>
-                        <Button icon={Icon::PlusCircleIcon} label="Add" variant={Variant::Primary}/>
-                    </StackItem>
                 </Stack>
             </div>),
         Route::ViewQuestions {session} => html!(
             <div class="pf-u-p-xl">
                 <Stack gutter=true>
                     <ViewQuestions session={session.clone()}/>
+                    // <Questionnaire session={session.clone()}/>
                 </Stack>
             </div>
         ),
