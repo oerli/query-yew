@@ -2,11 +2,9 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use patternfly_yew::*;
 
-// mod questionnaire;
 mod question;
 mod answer;
 use question::{ViewQuestions, CreateQuestions};
-// use questionnaire::{Questionnaire};
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -44,6 +42,6 @@ fn app() -> Html {
     }
 }
 
-fn main() {
+pub fn main() {
     yew::start_app::<App>();
 }

@@ -1,12 +1,11 @@
 use yew::prelude::*;
 use patternfly_yew::*;
-use serde::{Deserialize};
 use reqwasm::http::Request;
 use serde_json::json;
 use gloo::storage::{LocalStorage, Storage};
 
 use super::create_question_form::CreateQuestionForm;
-use super::Question;
+use super::{Question, Session};
 
 pub enum Msg {
     AppendQuestion(Question),
@@ -15,6 +14,8 @@ pub enum Msg {
 }
 
 const KEY: &str = "dev.pages.questionnaire.questions";
+const SESSION_KEY: &str = "dev.pages.questionnaire.session";
+
 const API_URL: &str = "http://localhost:8787";
 const GUI_URL: &str = "http://localhost:8080";
 
@@ -23,10 +24,6 @@ pub struct CreateQuestions {
     session: Option<Session>,
 }
 
-#[derive(Deserialize)]
-pub struct Session {
-    session: String,
-}
 
 impl Component for CreateQuestions {
     type Message = Msg;
@@ -35,8 +32,9 @@ impl Component for CreateQuestions {
     fn create(_: &Context<Self>) -> Self {
         // CreateQuestions{questions: vec![Question{question: "Create a Question".to_owned(), answers: vec![Answer{answer:"Add an answer".to_owned(), id:"1".to_owned()}]}]}
         let questions = LocalStorage::get(KEY).unwrap_or_else(|_| vec![Question::new()]);
+        let session = LocalStorage::get(SESSION_KEY).unwrap_or_else(|_| None);
 
-        CreateQuestions{questions, session: None}
+        CreateQuestions{questions, session: session}
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -65,6 +63,7 @@ impl Component for CreateQuestions {
             },
             Msg::ReceiveSession(s) => {
                 self.session = Some(s);
+                LocalStorage::set(SESSION_KEY, &self.session).unwrap();
                 true
             }
         }
@@ -106,7 +105,7 @@ impl Component for CreateQuestions {
             Some(s) => {html!(
                 
                 <PopoverPopup orientation={Orientation::Bottom} header={html!(<Title level={Level::H2}>{"Session"}</Title>)}>
-                    {format!("{}/{}", GUI_URL, s.session)}
+                    {format!("<a href=\"{}/{}\">{}/{}</a>", GUI_URL, s.session, GUI_URL, s.session)}
                 </PopoverPopup>
             )},
             None => html!()
