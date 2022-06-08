@@ -6,14 +6,15 @@ use crate::answer::{Answer, CreateAnswerForm};
 use super::Question;
 
 pub enum Msg {
-    AddQuestion,
-    TextChanged,
-    AppendAnswer(Answer),
+    ChangeQuestion,
+    AppendAnswer,
+    ChangeAnswer(Answer),
+    RemoveAnswer,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct CreateQuestionFormProps {
-    pub on_add_question: Callback<Question>,
+    pub on_change_question: Callback<Question>,
     pub question: Question,
 }
 
@@ -37,42 +38,55 @@ impl Component for CreateQuestionForm {
         let question = &mut self.question;
 
         match msg {
-            Msg::AddQuestion => {
-                ctx.props().on_add_question.emit(std::mem::take(question));
-                true
-            },
-            Msg::TextChanged => {
+            Msg::ChangeQuestion => {
                 if let Some(input) = self.my_input.cast::<HtmlInputElement>() {
                     self.question.question = input.value();
-                    return true;
+
+                    ctx.props().on_change_question.emit(self.question.clone());
                 }
                 false
             },
-            Msg::AppendAnswer(answer) => {
-                self.question.answers.push(answer);
+            Msg::AppendAnswer => {
+                self.question.answers.push(Answer::new());
                 true
+            },
+            Msg::ChangeAnswer(answer) => {
+                for (index, a) in self.question.answers.iter().enumerate() {
+                    if a.key == answer.key {
+                        let _ = std::mem::replace(&mut self.question.answers[index], answer);
+                        ctx.props().on_change_question.emit(self.question.clone());
+                        return true;
+                    }
+                }
+                ctx.props().on_change_question.emit(self.question.clone());
+                false
+            },
+            Msg::RemoveAnswer => {
+                self.question.answers.pop();
+                ctx.props().on_change_question.emit(self.question.clone());
+                true 
             }
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
         let link = ctx.link();
-        let onchange = link.callback(move|_| Msg::TextChanged);
-        
-        let onclick_add_question = ctx.link().callback(|_| Msg::AddQuestion);
+        let onchange = link.callback(move|_| Msg::ChangeQuestion);
 
         let answer_list: Html = self.question.answers.iter().map(| answer| html! {
-            <CreateAnswerForm answer={answer.clone()} on_add_answer={ctx.link().callback(Msg::AppendAnswer)}/>
+            <CreateAnswerForm answer={answer.clone()} on_change_answer={ctx.link().callback(Msg::ChangeAnswer)}/>
         }).collect();
+        
+        let onclick_add_answer = ctx.link().callback(|_| Msg::AppendAnswer);
+        let onclick_remove_answer = ctx.link().callback(|_| Msg::RemoveAnswer);
 
         html! {
             <>
                 <TextInput placeholder="Add a Question" icon={TextInputIcon::Clock} ref={self.my_input.clone()} {onchange} value={self.question.question.clone()}/>
-                {self.question.question.clone()}
                 
                 {answer_list}
-
-                <Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/>
+                <Button icon={Icon::PlusCircleIcon} label="Add Answer" variant={Variant::Primary} onclick={onclick_add_answer}/>
+                <Button icon={Icon::MinusCircleIcon} label="Remove Answer" variant={Variant::Secondary} onclick={onclick_remove_answer}/>
             </>
         }
     }

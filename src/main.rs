@@ -6,6 +6,12 @@ mod question;
 mod answer;
 use question::{ViewQuestions, CreateQuestions};
 
+pub const KEY: &str = "dev.pages.questionnaire.questions";
+pub const SESSION_KEY: &str = "dev.pages.questionnaire.session";
+
+pub const API_URL: &str = "http://127.0.0.1:8787";
+pub const GUI_URL: &str = "http://127.0.0.1:8080";
+
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
     #[at("/")]
@@ -43,5 +49,6 @@ fn app() -> Html {
 }
 
 pub fn main() {
+    wasm_logger::init(wasm_logger::Config::default());
     yew::start_app::<App>();
 }

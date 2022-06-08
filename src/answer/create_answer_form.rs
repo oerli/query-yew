@@ -5,13 +5,12 @@ use web_sys::HtmlInputElement;
 use super::Answer;
 
 pub enum Msg {
-    AddAnswer,
-    TextChanged,
+    ChangeAnswer,
 }
 
 #[derive(Properties, PartialEq)]
 pub struct CreateAnswerFormProps {
-    pub on_add_answer: Callback<Answer>,
+    pub on_change_answer: Callback<Answer>,
     pub answer: Answer,
 }
 
@@ -35,32 +34,25 @@ impl Component for CreateAnswerForm {
         let answer = &mut self.answer;       
 
         match msg {
-            Msg::AddAnswer => {
-                ctx.props().on_add_answer.emit(std::mem::take(answer));
-                true
-            },
-            Msg::TextChanged => {
+            Msg::ChangeAnswer => {
                 if let Some(input) = self.my_input.cast::<HtmlInputElement>() {
                     self.answer.answer = input.value();
-                    return true;
+                    
+                    ctx.props().on_change_answer.emit(self.answer.clone());
+                    // let answer = &mut self.answer;
+                    // ctx.props().on_change_answer.emit(std::mem::take(answer));
                 }
-                false
+                true
             },
         }
     }
 
     fn view(&self, ctx: &Context<Self>) -> Html {
-        let link = ctx.link();
-        let onchange = link.callback(move|_| Msg::TextChanged);
-
-        let onclick_add_answer = ctx.link().callback(|_| Msg::AddAnswer);
+        let onchange = ctx.link().callback(|_| Msg::ChangeAnswer);
 
         html! {
             <>
                 <TextInput placeholder="Add an Answer" icon={TextInputIcon::Clock} ref={self.my_input.clone()} {onchange} value={self.answer.answer.clone()}/>
-                {self.answer.answer.clone()}
-                
-                <Button icon={Icon::PlusCircleIcon} label="Add Answer" variant={Variant::Primary} onclick={onclick_add_answer}/>
             </>
         }
     }
