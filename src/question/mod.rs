@@ -6,6 +6,7 @@ use super::answer::Answer;
 mod view_questions;
 mod create_questions;
 mod create_question_form;
+mod view_question_form;
 
 pub use view_questions::ViewQuestions;
 pub use create_questions::CreateQuestions;

@@ -65,7 +65,7 @@ impl Component for CreateQuestions {
                 ctx.link().send_future(async {
 
                     //TODO: .json should be used, wait for reqwasm update, serde_json can be removed afterwards
-                    match Request::post(&format!("{}/q", API_URL)).header("Content-Type", "application/json").body(payload).send().await {
+                    match Request::post(&format!("{}/question", API_URL)).header("Content-Type", "application/json").body(payload).send().await {
                         Ok(r) => {
                             Msg::ReceiveSession(r.json().await.unwrap())
                         },
@@ -121,7 +121,7 @@ impl Component for CreateQuestions {
                     <Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/>
                 </StackItem>
                 <StackItem>
-                    <Button icon={Icon::PlusCircleIcon} label="Submit" variant={Variant::Primary} onclick={onclick_submit}/>
+                    <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit}/>
                 </StackItem>
                 {session}
             </>

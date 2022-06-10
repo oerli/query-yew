@@ -8,9 +8,10 @@ use question::{ViewQuestions, CreateQuestions};
 
 pub const KEY: &str = "dev.pages.questionnaire.questions";
 pub const SESSION_KEY: &str = "dev.pages.questionnaire.session";
+pub const VOTE_KEY: &str = "dev.pages.questionnaire.vote";
 
-pub const API_URL: &str = "http://127.0.0.1:8787";
-pub const GUI_URL: &str = "http://127.0.0.1:8080";
+pub const API_URL: &str = "http://localhost:8787";
+pub const GUI_URL: &str = "http://localhost:8080";
 
 #[derive(Clone, Routable, PartialEq)]
 enum Route {
@@ -32,7 +33,6 @@ fn switch(routes: &Route) -> Html {
             <div class="pf-u-p-xl">
                 <Stack gutter=true>
                     <ViewQuestions session={session.clone()}/>
-                    // <Questionnaire session={session.clone()}/>
                 </Stack>
             </div>
         ),

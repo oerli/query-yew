@@ -39,8 +39,6 @@ impl Component for CreateAnswerForm {
                     self.answer.answer = input.value();
                     
                     ctx.props().on_change_answer.emit(self.answer.clone());
-                    // let answer = &mut self.answer;
-                    // ctx.props().on_change_answer.emit(std::mem::take(answer));
                 }
                 true
             },
