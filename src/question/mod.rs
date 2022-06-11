@@ -11,9 +11,9 @@ mod view_question_form;
 pub use view_questions::ViewQuestions;
 pub use create_questions::CreateQuestions;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Default)]
 pub struct Session {
-    session: String,
+    pub session: String,
 }
 
 #[derive(Clone, PartialEq, Serialize, Deserialize, Debug, Default)]

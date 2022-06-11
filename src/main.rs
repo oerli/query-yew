@@ -5,6 +5,8 @@ use patternfly_yew::*;
 mod question;
 mod answer;
 use question::{ViewQuestions, CreateQuestions};
+mod result;
+use result::ViewResults;
 
 pub const KEY: &str = "dev.pages.questionnaire.questions";
 pub const SESSION_KEY: &str = "dev.pages.questionnaire.session";
@@ -17,6 +19,8 @@ pub const GUI_URL: &str = "http://localhost:8080";
 enum Route {
     #[at("/")]
     CreateQuestions,
+    #[at("/result/:session")]
+    ViewResults {session: String},
     #[at("/:session")]
     ViewQuestions {session: String},
 }
@@ -33,6 +37,13 @@ fn switch(routes: &Route) -> Html {
             <div class="pf-u-p-xl">
                 <Stack gutter=true>
                     <ViewQuestions session={session.clone()}/>
+                </Stack>
+            </div>
+        ),
+        Route::ViewResults {session} => html!(
+            <div class="pf-u-p-xl">
+                <Stack gutter=true>
+                    <ViewResults session={session.clone()}/>
                 </Stack>
             </div>
         ),
