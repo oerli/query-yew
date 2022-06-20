@@ -1,6 +1,7 @@
 use patternfly_yew::TableRenderer;
 use serde::{Deserialize, Serialize};
 use yew::html;
+use patternfly_yew::*;
 use super::question::Question;
 use super::answer::Vote;
 
@@ -16,13 +17,19 @@ pub struct Score {
 
 impl TableRenderer for Score {
     fn render(&self, column: patternfly_yew::ColumnIndex) -> yew::Html {
-        html!(
-            match column.index {
-                0 => self.answer.clone(),
-                1 => self.vote.clone(),
-                2 => self.count.to_string(),
-                _ => "(unknown)".to_owned()
-            }
-        )
+        
+        match column.index {
+            0 => html!{{self.answer.clone()}},
+            1 => {
+                match self.vote.as_str() {
+                    "true" => html!{<Label color={Color::Green} icon={Icon::CheckCircle} label={"true"}/>},
+                    "false" => html!{<Label color={Color::Red} icon={Icon::MinusCircleIcon} label={"false"}/>},
+                    _ => html!{{self.vote.clone()}},
+                }
+            },
+            2 => html!{{self.count.to_string()}},
+            _ => html!{{"(unknown)"}}
+        }
+        
     }
 }

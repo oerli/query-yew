@@ -70,6 +70,9 @@ impl Component for ViewQuestions {
                 
                 <PopoverPopup orientation={Orientation::Bottom} header={html!(<Title level={Level::H2}>{"Vote"}</Title>)}>
                     {s.session.clone()}
+                    <p>
+                    {"Results: "}<a href={format!("/result/{}", self.session.session)}>{format!("/result/{}", self.session.session)}</a>
+                    </p>
                 </PopoverPopup>
             )},
             None => html!()

@@ -66,35 +66,31 @@ impl Component for ViewResults {
                 </TableHeader>
             };
             
-            let scores: Vec<Score> = question.answers.iter().map(|answer| {
+            let scores: Vec<Score> = question.answers.iter().filter_map(|answer| {
                 match self.count.get(&question.key) {
                     Some(q) => match q.get(&answer.key) {
                         Some(a) => {
-                            a.iter().map(|(s, c)| {
-                                Score {
-                                    answer: answer.answer.clone(),
-                                    vote: s.clone(),
-                                    count: c.clone(),
-                                }
-                            })
+                            Some(
+                                a.iter().map(|(s, c)| {
+                                    Score {
+                                        answer: answer.answer.clone(),
+                                        vote: s.clone(),
+                                        count: c.clone(),
+                                    }
+                                })
+                            )
                         },
-                        None => todo!()
+                        None => {
+                            log::debug!("{:?}", &answer.key);
+                            None
+                        },
                     },
-                    None => todo!()
+                    None => {
+                        log::debug!("{:?}", &question.key);
+                        None
+                    },
                 }
-            }).flatten().collect();
-                            // match(&answer.vote) {
-                            //     Some(v)=> {
-                            //         match a.get(&v.vote) {
-                            //             Some(v) => v.clone(),
-                            //             None => 0 as usize,
-                            //         }
-                            //     },
-                            //     None => 0 as usize,
-                            // }
-                        
-                    
-                
+            }).flatten().collect();                
 
             let model: SharedTableModel<_> = scores.clone().into();
     
@@ -110,16 +106,6 @@ impl Component for ViewResults {
             }
         }).collect()
 
-        // html!{
-        //     <>
-        //         // <p>
-        //         //     {format!("{:?}", self.description)}
-        //         // </p>
-        //         <p>
-        //             {format!("{:?}", self.count)}
-        //         </p>
-        //     </>
-        // }
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
