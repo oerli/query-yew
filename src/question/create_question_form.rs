@@ -82,7 +82,13 @@ impl Component for CreateQuestionForm {
 
         html! {
             <>
-                <TextInput placeholder="Add a Question" icon={TextInputIcon::Clock} ref={self.my_input.clone()} {onchange} value={self.question.question.clone()}/>
+                <TextInput placeholder="Add a Question" ref={self.my_input.clone()} {onchange} value={self.question.question.clone()} state={
+                    if self.question.question.len() > 0 {
+                        InputState::Success
+                    } else {
+                        InputState::Error
+                    }
+                }/>
                 
                 {answer_list}
                 <Button icon={Icon::PlusCircleIcon} label="Add Answer" variant={Variant::Primary} onclick={onclick_add_answer}/>

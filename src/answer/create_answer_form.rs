@@ -50,7 +50,13 @@ impl Component for CreateAnswerForm {
 
         html! {
             <>
-                <TextInput placeholder="Add an Answer" icon={TextInputIcon::Clock} ref={self.my_input.clone()} {onchange} value={self.answer.answer.clone()}/>
+                <TextInput placeholder="Add an Answer" ref={self.my_input.clone()} {onchange} value={self.answer.answer.clone()} state={
+                    if self.answer.answer.len() > 0 {
+                        InputState::Success
+                    } else {
+                        InputState::Error
+                    }
+                }/>
             </>
         }
     }

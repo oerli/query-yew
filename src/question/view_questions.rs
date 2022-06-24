@@ -6,7 +6,7 @@ use gloo::storage::{LocalStorage, Storage};
 
 use super::view_question_form::ViewQuestionForm;
 use super::{Question, Session};
-use crate::answer::{Vote, Answer};
+use crate::answer::Vote;
 
 use crate::{API_URL, VOTE_KEY};
 

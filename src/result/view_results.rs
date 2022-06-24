@@ -1,15 +1,13 @@
 use std::collections::HashMap;
-use std::hash::Hash;
 
 use yew::prelude::*;
 use patternfly_yew::*;
 use reqwasm::http::Request;
-use serde_json::json;
 use serde::Deserialize;
 
 use crate::question::{Question, Session};
 use super::Score;
-use crate::answer::{Vote, Answer};
+use crate::answer::Vote;
 
 use crate::API_URL;
 
@@ -97,7 +95,7 @@ impl Component for ViewResults {
             html! {
                 <>
                     <Table<SharedTableModel<Score>>
-                        mode={TableMode::CompactNoBorders}
+                        mode={TableMode::Compact}
                         header={header}
                         entries={model}
                         >

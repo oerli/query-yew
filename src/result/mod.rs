@@ -2,8 +2,6 @@ use patternfly_yew::TableRenderer;
 use serde::{Deserialize, Serialize};
 use yew::html;
 use patternfly_yew::*;
-use super::question::Question;
-use super::answer::Vote;
 
 mod view_results;
 pub use view_results::ViewResults;

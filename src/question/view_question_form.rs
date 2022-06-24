@@ -1,8 +1,7 @@
 use yew::prelude::*;
 use patternfly_yew::*;
-use web_sys::HtmlInputElement;
 
-use crate::answer::{Answer, Vote, ViewAnswerForm};
+use crate::answer::{Answer, ViewAnswerForm};
 use super::Question;
 
 pub enum Msg {
@@ -17,7 +16,6 @@ pub struct ViewQuestionFormProps {
 
 pub struct ViewQuestionForm {
     question: Question,
-    my_input: NodeRef,
 }
 
 impl Component for ViewQuestionForm {
@@ -27,7 +25,6 @@ impl Component for ViewQuestionForm {
     fn create(ctx: &Context<Self>) -> Self {
         Self {
             question: ctx.props().question.clone(),
-            my_input: NodeRef::default(),
         }
     }
 
