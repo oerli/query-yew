@@ -1,4 +1,3 @@
-use patternfly_yew::TableRenderer;
 use serde::{Deserialize, Serialize};
 use yew::html;
 use patternfly_yew::*;
@@ -11,6 +10,7 @@ pub struct Score {
     pub answer: String,
     pub vote: String,
     pub count: usize,
+    pub total: usize,
 }
 
 impl TableRenderer for Score {
@@ -26,6 +26,7 @@ impl TableRenderer for Score {
                 }
             },
             2 => html!{{self.count.to_string()}},
+            3 => html!{{self.total.to_string()}},
             _ => html!{{"(unknown)"}}
         }
         

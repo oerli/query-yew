@@ -3,6 +3,7 @@ use patternfly_yew::*;
 use reqwasm::http::Request;
 use serde_json::json;
 use gloo::storage::{LocalStorage, Storage};
+use std::time::Duration;
 
 use super::view_question_form::ViewQuestionForm;
 use super::{Question, Session};
@@ -15,6 +16,7 @@ pub enum Msg {
     ChangeVotes(Question),
     Submit,
     ReceiveSession(Session),
+    ShowToast(Toast),
 }
 
 
@@ -38,7 +40,15 @@ impl Component for ViewQuestions {
         ctx.link().send_future(async move {
             match Request::get(&format!("{}/question/{}", API_URL, session)).send().await {
                 Ok(r) => Msg::LoadQuestions(r.json().await.unwrap()),
-                Err(_) => todo!()
+                Err(e) => {
+                    Msg::ShowToast(Toast{
+                        title: "Error :(".into(),
+                        timeout: Some(Duration::from_secs(5)),
+                        r#type: Type::Danger,
+                        body: e.into(),
+                        ..Default::default()
+                    })
+                },
             }
         });
         ViewQuestions {
@@ -65,26 +75,17 @@ impl Component for ViewQuestions {
 
         let onclick_submit = ctx.link().callback(|_| Msg::Submit);
 
-        let vote_key = match &self.vote_key {
-            Some(s) => {html!(
-                
-                <PopoverPopup orientation={Orientation::Bottom} header={html!(<Title level={Level::H2}>{"Vote"}</Title>)}>
-                    {s.session.clone()}
-                    <p>
-                    {"Results: "}<a href={format!("/result/{}", self.session.session)}>{format!("/result/{}", self.session.session)}</a>
-                    </p>
-                </PopoverPopup>
-            )},
-            None => html!()
-        };
-
         html! {
             <>
                 {question_list}
                 <StackItem>
-                    <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit}/>
+                    <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
+                        match self.vote_key {
+                            Some(_) => true,
+                            None => false,
+                        }
+                    }/>
                 </StackItem>
-                {vote_key}
             </>
         }
     }
@@ -134,16 +135,41 @@ impl Component for ViewQuestions {
                             Msg::ReceiveSession(r.json().await.unwrap())
                         },
                         Err(e) => {
-                            log::debug!("{:?}", e);
-                            todo!()
+                            Msg::ShowToast(Toast{
+                                title: "Error :(".into(),
+                                timeout: Some(Duration::from_secs(5)),
+                                r#type: Type::Danger,
+                                body: e.into(),
+                                ..Default::default()
+                            })
                         }
                     }
                 });
                 true
             },
             Msg::ReceiveSession(s) => {
+                let session = self.session.session.clone();
+                let key = s.session.clone();
                 self.vote_key = Some(s);
+                
+                ctx.link().send_future(async move {
+                    Msg::ShowToast(Toast{
+                        title: "Vote Submitted!".into(),
+                        r#type: Type::Success,
+                        body: html!{
+                            <>
+                                <p>{"Vote Key: "}{key}</p>
+                                <p>{"View Results: "}<a href={format!("/result/{}", session)}>{format!("/result/{}", session)}</a></p>
+                            </>
+                        },
+                        ..Default::default()
+                    })
+                });
                 true
+            },
+            Msg::ShowToast(t) => {
+                ToastDispatcher::new().toast(t);
+                false
             }
         }
     }

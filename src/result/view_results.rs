@@ -61,6 +61,7 @@ impl Component for ViewResults {
                     <TableColumn label={question.question.clone()}/>
                     <TableColumn label="Answer"/>
                     <TableColumn label="Count"/>
+                    <TableColumn label="Total"/>
                 </TableHeader>
             };
             
@@ -68,12 +69,18 @@ impl Component for ViewResults {
                 match self.count.get(&question.key) {
                     Some(q) => match q.get(&answer.key) {
                         Some(a) => {
+                            let mut total = 0 as usize;
+                            for (_, c) in a.iter() {
+                                total = total + c;
+                            }
+                            
                             Some(
-                                a.iter().map(|(s, c)| {
+                                a.iter().map(move |(s, c)| {
                                     Score {
                                         answer: answer.answer.clone(),
                                         vote: s.clone(),
                                         count: c.clone(),
+                                        total: total.clone(),
                                     }
                                 })
                             )

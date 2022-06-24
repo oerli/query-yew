@@ -54,6 +54,7 @@ fn switch(routes: &Route) -> Html {
 fn app() -> Html {
     html! {
         <BrowserRouter>
+            <ToastViewer/>
             <yew_router::Switch<Route> render={yew_router::Switch::render(switch)} />
         </BrowserRouter>
     }
