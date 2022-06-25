@@ -14,6 +14,7 @@ pub use create_questions::CreateQuestions;
 #[derive(Serialize, Deserialize, Default)]
 pub struct Session {
     pub session: String,
+    pub lifetime: u64,
 }
 
 #[derive(Clone, PartialEq, Serialize, Deserialize, Debug, Default)]

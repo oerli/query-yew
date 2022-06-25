@@ -3,6 +3,8 @@ use patternfly_yew::*;
 use reqwasm::http::Request;
 use serde_json::json;
 use gloo::storage::{LocalStorage, Storage};
+use std::time::Duration;
+use chrono::{NaiveDateTime, DateTime, Utc};
 
 use super::create_question_form::CreateQuestionForm;
 use super::{Question, Session};
@@ -13,7 +15,9 @@ pub enum Msg {
     ChangeQuestion(Question),
     RemoveQuestion,
     ReceiveSession(Session),
-    Submit
+    Submit,
+    ShowToast(Toast),
+    ResetSession,
 }
 
 pub struct CreateQuestions {
@@ -56,8 +60,26 @@ impl Component for CreateQuestions {
                 true
             },
             Msg::ReceiveSession(s) => {
+                let session = s.session.clone();
+                let lifetime = s.lifetime.clone();
                 self.session = Some(s);
                 LocalStorage::set(SESSION_KEY, &self.session).unwrap();
+
+                ctx.link().send_future(async move {
+                    Msg::ShowToast(Toast{
+                        title: "Questions Submitted!".into(),
+                        r#type: Type::Success,
+                        body: html!{
+                            <>
+                                <p>{"Session Key: "}{session.clone()}</p>
+                                <p>{"Valid until: "}{DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(lifetime as i64, 0), Utc).format("%-d %b %Y %H:%M UTC")}</p>
+                                <p>{"View Questions: "}<a href={format!("{}/{}", GUI_URL, session)}>{format!("{}/{}", GUI_URL, session)}</a></p>
+                            </>
+                        },
+                        ..Default::default()
+                    })
+                });
+
                 true
             },
             Msg::Submit => {
@@ -70,11 +92,24 @@ impl Component for CreateQuestions {
                             Msg::ReceiveSession(r.json().await.unwrap())
                         },
                         Err(e) => {
-                            log::debug!("{:?}", e);
-                            todo!()
+                            Msg::ShowToast(Toast{
+                                title: "Error :(".into(),
+                                timeout: Some(Duration::from_secs(15)),
+                                r#type: Type::Danger,
+                                body: e.into(),
+                                ..Default::default()
+                            })
                         }
                     }
                 });
+                true
+            },
+            Msg::ShowToast(t) => {
+                ToastDispatcher::new().toast(t);
+                false
+            },
+            Msg::ResetSession => {
+                self.session = None;
                 true
             }
         }
@@ -100,30 +135,39 @@ impl Component for CreateQuestions {
         let onclick_remove_question = ctx.link().callback(|_| Msg::RemoveQuestion);
         
         let onclick_submit = ctx.link().callback(|_| Msg::Submit);
-
-        let session = match &self.session {
-            Some(s) => {html!(
-                
-                <PopoverPopup orientation={Orientation::Bottom} header={html!(<Title level={Level::H2}>{"Session"}</Title>)}>
-                    <a href={format!("{}/{}", GUI_URL, s.session)}>{format!("{}/{}", GUI_URL, s.session)}</a>
-                </PopoverPopup>
-            )},
-            None => html!()
-        };
         
         let onclick_add_question = ctx.link().callback(|_| Msg::AppendQuestion);
+
+        let onclick_reset_session = ctx.link().callback(|_| Msg::ResetSession);
 
         html! {
             <>
                 {question_list}
                 <StackItem>
-                    <Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/>
-                    <Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/>
+                    <Split gutter=true>
+                        <SplitItem><Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/></SplitItem>
+                        <SplitItem><Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/></SplitItem>
+                    </Split>
                 </StackItem>
                 <StackItem>
-                    <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit}/>
+                    <Split gutter=true>
+                        <SplitItem><Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
+                                match self.session {
+                                    Some(_) => true,
+                                    None => false,
+                                }
+                            }/>
+                        </SplitItem>
+                        <SplitItem>
+                            {
+                                match &self.session {
+                                    Some(s) => html!{<Button icon={Icon::MinusCircleIcon} label={format!("Reset Session {}", s.session)} variant={Variant::Primary} onclick={onclick_reset_session}/>},
+                                    None => html!{},
+                                }
+                            }
+                        </SplitItem>
+                    </Split>    
                 </StackItem>
-                {session}
             </>
         }
     }

@@ -47,7 +47,7 @@ impl Component for ViewResults {
         });
         ViewResults {
             questions: vec![],
-            session: Session{session: ctx.props().session.clone()},
+            session: Session{session: ctx.props().session.clone(), lifetime: 0},
             votes: vec![],
             description: HashMap::new(),
             count: HashMap::new(),

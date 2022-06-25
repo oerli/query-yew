@@ -53,7 +53,7 @@ impl Component for ViewQuestions {
         });
         ViewQuestions {
             questions: vec![],
-            session: Session{session: ctx.props().session.clone()},
+            session: Session{session: ctx.props().session.clone(), lifetime: 0},
             vote_key: None,
         }
     }
@@ -137,7 +137,7 @@ impl Component for ViewQuestions {
                         Err(e) => {
                             Msg::ShowToast(Toast{
                                 title: "Error :(".into(),
-                                timeout: Some(Duration::from_secs(5)),
+                                timeout: Some(Duration::from_secs(15)),
                                 r#type: Type::Danger,
                                 body: e.into(),
                                 ..Default::default()
