@@ -31,8 +31,6 @@ impl Component for CreateAnswerForm {
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let answer = &mut self.answer;       
-
         match msg {
             Msg::ChangeAnswer => {
                 if let Some(input) = self.my_input.cast::<HtmlInputElement>() {

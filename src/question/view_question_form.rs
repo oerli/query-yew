@@ -29,8 +29,6 @@ impl Component for ViewQuestionForm {
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let question = &mut self.question;
-
         match msg {
             Msg::ChangeVote(answer) => {
                 for (index, a) in self.question.answers.iter().enumerate() {

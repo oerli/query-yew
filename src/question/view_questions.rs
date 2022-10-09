@@ -67,7 +67,6 @@ impl Component for ViewQuestions {
                             <ViewQuestionForm question={question.clone()} on_change_vote={ctx.link().callback(Msg::ChangeVotes)}/>
                         </Form>
                     </Card>
-                    <br/>
                 </StackItem>
                 
             }
@@ -79,7 +78,6 @@ impl Component for ViewQuestions {
             <>
                 {question_list}
                 <StackItem>
-                    <Card>
                     <Split gutter=true>
                         <SplitItem fill=true />
                         <SplitItem>
@@ -90,8 +88,8 @@ impl Component for ViewQuestions {
                                 }
                             }/>
                         </SplitItem>
+                        <SplitItem fill=true />
                     </Split>
-                    </Card>
                 </StackItem>
             </>
         }
@@ -105,7 +103,7 @@ impl Component for ViewQuestions {
                 for question in &mut self.questions {
                     for answer in &mut question.answers {
                         match &answer.vote {
-                            Some(a) => (),
+                            Some(_a) => (),
                             None => answer.vote = Some(Vote { vote: "false".to_owned(), answer_key: Some(answer.key.clone()), question_key: Some(question.key.clone())}),
                         }
                     }

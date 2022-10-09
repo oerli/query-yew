@@ -26,6 +26,7 @@ pub struct ViewResults {
     questions: Vec<Question>,
     votes: Vec<Vote>,
     #[serde(skip_deserializing)]
+    #[allow(dead_code)]
     session: Session,
     #[serde(skip_deserializing)]
     description: HashMap<String, String>,
@@ -54,7 +55,7 @@ impl Component for ViewResults {
         }
     }
 
-    fn view(&self, ctx: &Context<Self>) -> Html {
+    fn view(&self, _ctx: &Context<Self>) -> Html {
         self.questions.iter().map(|question| {
             let header = html_nested! {
                 <TableHeader>
@@ -113,7 +114,7 @@ impl Component for ViewResults {
 
     }
 
-    fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
+    fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::LoadResults(r) => {
                 self.questions = r.questions;
@@ -152,7 +153,7 @@ impl Component for ViewResults {
                             match self.count.get_mut(vote.question_key.as_ref().unwrap()) {
                                 Some(question) => {
                                     match question.get_mut(vote.answer_key.as_ref().unwrap()) {
-                                        Some(v) => todo!(),
+                                        Some(_v) => todo!(),
                                         None => {
                                             question.insert(vote.answer_key.as_ref().unwrap().clone(), HashMap::new());
                                             match question.get_mut(vote.answer_key.as_ref().unwrap()) {

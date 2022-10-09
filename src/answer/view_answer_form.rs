@@ -1,4 +1,3 @@
-use gloo::console::{debug, externs::debug};
 use yew::prelude::*;
 use patternfly_yew::*;
 use web_sys::HtmlInputElement;
@@ -32,8 +31,6 @@ impl Component for ViewAnswerForm {
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
-        let answer = &mut self.answer;       
-
         match msg {
             Msg::ChangeVote => {
                 if let Some(input) = self.my_input.cast::<HtmlInputElement>() {

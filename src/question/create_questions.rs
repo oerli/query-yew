@@ -126,7 +126,6 @@ impl Component for CreateQuestions {
                             <CreateQuestionForm question={question.clone()} on_change_question={ctx.link().callback(Msg::ChangeQuestion)}/>
                         </Form>
                     </Card>
-                    <br/>
                 </StackItem>
             }
         }).collect();
@@ -148,12 +147,6 @@ impl Component for CreateQuestions {
                             </Form>
                         </SplitItem>
                         <SplitItem fill=true></SplitItem>
-                        <SplitItem>
-                            <Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/>
-                        </SplitItem>
-                        <SplitItem>
-                            <Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/>
-                        </SplitItem>
                     </Split>  
                 </Card>
   
@@ -164,10 +157,22 @@ impl Component for CreateQuestions {
         html! {
             <>
                 {question_list}
+                <StackItem>
+                    <Split gutter=true>
+                        <SplitItem fill=true />
+                        <SplitItem>
+                            <Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/>
+                        </SplitItem>
+                        <SplitItem>
+                            <Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/>
+                        </SplitItem>
+                        <SplitItem fill=true />
+                    </Split>
+                </StackItem>
                 {question_options}
                 <StackItem>
-                <Card>
                 <Split gutter=true>
+                    <SplitItem fill=true />
                     <SplitItem>
                         {
                             match &self.session {
@@ -176,7 +181,6 @@ impl Component for CreateQuestions {
                             }
                         }
                     </SplitItem>
-                    <SplitItem fill=true></SplitItem>
                     <SplitItem>
                         <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
                             match self.session {
@@ -185,8 +189,8 @@ impl Component for CreateQuestions {
                             }
                         }/>
                     </SplitItem>
+                    <SplitItem fill=true />
                 </Split>
-                </Card>
                 </StackItem>
 
             </>
