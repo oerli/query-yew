@@ -52,7 +52,7 @@ impl Component for CreateAnswerForm {
             <>
                 <TextInput placeholder="Add an Answer" ref={self.my_input.clone()} {onchange} value={self.answer.answer.clone()} state={
                     if self.answer.answer.len() > 0 {
-                        InputState::Success
+                        InputState::Default
                     } else {
                         InputState::Error
                     }

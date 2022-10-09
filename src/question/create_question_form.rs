@@ -73,6 +73,7 @@ impl Component for CreateQuestionForm {
         let link = ctx.link();
         let onchange = link.callback(move|_| Msg::ChangeQuestion);
 
+        
         let answer_list: Html = self.question.answers.iter().map(| answer| html! {
             <CreateAnswerForm answer={answer.clone()} on_change_answer={ctx.link().callback(Msg::ChangeAnswer)}/>
         }).collect();
@@ -80,19 +81,35 @@ impl Component for CreateQuestionForm {
         let onclick_add_answer = ctx.link().callback(|_| Msg::AppendAnswer);
         let onclick_remove_answer = ctx.link().callback(|_| Msg::RemoveAnswer);
 
+        let answer_options: Html = html! {
+            <Split gutter=true>
+                <SplitItem>
+                    <Switch label="Multiple Answers possible" disabled=true/><br/>
+                    <Switch label="Answers provided must be correct" disabled=true/>
+                </SplitItem>
+                <SplitItem fill=true>
+                </SplitItem>
+                <SplitItem>
+                    <Button icon={Icon::MinusCircleIcon} label="Remove Answer" variant={Variant::Secondary} onclick={onclick_remove_answer}/>
+                </SplitItem>
+                <SplitItem>
+                    <Button icon={Icon::PlusCircleIcon} label="Add Answer" variant={Variant::Primary} onclick={onclick_add_answer}/>
+                </SplitItem>
+            </Split>
+        };
+
         html! {
             <>
                 <TextInput placeholder="Add a Question" ref={self.my_input.clone()} {onchange} value={self.question.question.clone()} state={
                     if self.question.question.len() > 0 {
-                        InputState::Success
+                        InputState::Default
                     } else {
                         InputState::Error
                     }
                 }/>
                 
                 {answer_list}
-                <Button icon={Icon::PlusCircleIcon} label="Add Answer" variant={Variant::Primary} onclick={onclick_add_answer}/>
-                <Button icon={Icon::MinusCircleIcon} label="Remove Answer" variant={Variant::Secondary} onclick={onclick_remove_answer}/>
+                {answer_options}
             </>
         }
     }

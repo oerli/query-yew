@@ -1,4 +1,7 @@
 # Getting Started
+## Get node modules
+Run command to download node packages from package.json:
+`npm install @patternfly/patternfly --save`
 
 ## Development on localhost
 Use `trunk` to compile to webassembly and run the webserver, with `--open` will tell to start the Browser with the URL listening on:

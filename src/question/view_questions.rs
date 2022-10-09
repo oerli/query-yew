@@ -62,7 +62,7 @@ impl Component for ViewQuestions {
         let question_list: Html = self.questions.iter().map(|question| {
             html! {
                 <StackItem fill=true>
-                    <Card selected=true selectable=true>
+                    <Card>
                         <Form>
                             <ViewQuestionForm question={question.clone()} on_change_vote={ctx.link().callback(Msg::ChangeVotes)}/>
                         </Form>
@@ -79,12 +79,19 @@ impl Component for ViewQuestions {
             <>
                 {question_list}
                 <StackItem>
-                    <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
-                        match self.vote_key {
-                            Some(_) => true,
-                            None => false,
-                        }
-                    }/>
+                    <Card>
+                    <Split gutter=true>
+                        <SplitItem fill=true />
+                        <SplitItem>
+                            <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
+                                match self.vote_key {
+                                    Some(_) => true,
+                                    None => false,
+                                }
+                            }/>
+                        </SplitItem>
+                    </Split>
+                    </Card>
                 </StackItem>
             </>
         }

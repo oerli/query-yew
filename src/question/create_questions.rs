@@ -118,10 +118,9 @@ impl Component for CreateQuestions {
     fn view(&self, ctx: &Context<Self>) -> Html {
 
         let question_list: Html = self.questions.iter().enumerate().map(|(index, question)| {
-
             html! {
                 <StackItem fill=true>
-                    <Card selected=true selectable=true>
+                    <Card >
                         <Text component={TextVariant::H2}>{format!("Question {}", index+1)}</Text>
                         <Form>
                             <CreateQuestionForm question={question.clone()} on_change_question={ctx.link().callback(Msg::ChangeQuestion)}/>
@@ -131,43 +130,65 @@ impl Component for CreateQuestions {
                 </StackItem>
             }
         }).collect();
-        
-        let onclick_remove_question = ctx.link().callback(|_| Msg::RemoveQuestion);
-        
-        let onclick_submit = ctx.link().callback(|_| Msg::Submit);
-        
-        let onclick_add_question = ctx.link().callback(|_| Msg::AppendQuestion);
 
+        let onclick_remove_question = ctx.link().callback(|_| Msg::RemoveQuestion);
+        let onclick_add_question = ctx.link().callback(|_| Msg::AppendQuestion);
+        let onclick_submit = ctx.link().callback(|_| Msg::Submit);
         let onclick_reset_session = ctx.link().callback(|_| Msg::ResetSession);
+        let question_options: Html = html! {
+            <>
+            <StackItem>
+                <Card>
+                    <Text component={TextVariant::H2}>{"Options"}</Text>
+                    <Split gutter=true>
+                        <SplitItem>
+                            <Form>
+                                <TextInput placeholder="Title" disabled=true />    
+                                <Switch label="Show each Question after an other" disabled=true />
+                            </Form>
+                        </SplitItem>
+                        <SplitItem fill=true></SplitItem>
+                        <SplitItem>
+                            <Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/>
+                        </SplitItem>
+                        <SplitItem>
+                            <Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/>
+                        </SplitItem>
+                    </Split>  
+                </Card>
+  
+            </StackItem>
+            </>
+        };
 
         html! {
             <>
                 {question_list}
+                {question_options}
                 <StackItem>
-                    <Split gutter=true>
-                        <SplitItem><Button icon={Icon::PlusCircleIcon} label="Add Question" variant={Variant::Primary} onclick={onclick_add_question}/></SplitItem>
-                        <SplitItem><Button icon={Icon::MinusCircleIcon} label="Remove Question" variant={Variant::Secondary} onclick={onclick_remove_question}/></SplitItem>
-                    </Split>
-                </StackItem>
-                <StackItem>
-                    <Split gutter=true>
-                        <SplitItem><Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
-                                match self.session {
-                                    Some(_) => true,
-                                    None => false,
-                                }
-                            }/>
-                        </SplitItem>
-                        <SplitItem>
-                            {
-                                match &self.session {
-                                    Some(s) => html!{<Button icon={Icon::MinusCircleIcon} label={format!("Reset Session {}", s.session)} variant={Variant::Primary} onclick={onclick_reset_session}/>},
-                                    None => html!{},
-                                }
+                <Card>
+                <Split gutter=true>
+                    <SplitItem>
+                        {
+                            match &self.session {
+                                Some(s) => html!{<Button icon={Icon::MinusCircleIcon} label={format!("Reset Session {}", s.session)} variant={Variant::Secondary} onclick={onclick_reset_session}/>},
+                                None => html!{},
                             }
-                        </SplitItem>
-                    </Split>    
+                        }
+                    </SplitItem>
+                    <SplitItem fill=true></SplitItem>
+                    <SplitItem>
+                        <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
+                            match self.session {
+                                Some(_) => true,
+                                None => false,
+                            }
+                        }/>
+                    </SplitItem>
+                </Split>
+                </Card>
                 </StackItem>
+
             </>
         }
     }
