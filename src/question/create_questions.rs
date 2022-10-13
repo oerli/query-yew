@@ -1,3 +1,4 @@
+use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use patternfly_yew::*;
 use reqwasm::http::Request;
@@ -7,12 +8,13 @@ use std::time::Duration;
 use chrono::{NaiveDateTime, DateTime, Utc};
 
 use super::create_question_form::CreateQuestionForm;
-use super::{Question, Session};
-use crate::{KEY, SESSION_KEY, API_URL, GUI_URL};
+use super::{Question, QuestionOptions, Session};
+use crate::{KEY, OPTIONS, SESSION_KEY, API_URL, GUI_URL};
 
 pub enum Msg {
     AppendQuestion,
     ChangeQuestion(Question),
+    ChangeTitle(String),
     RemoveQuestion,
     ReceiveSession(Session),
     Submit,
@@ -20,8 +22,10 @@ pub enum Msg {
     ResetSession,
 }
 
+#[derive(Serialize, Deserialize, Default)]
 pub struct CreateQuestions {
     questions: Vec<Question>,
+    options: QuestionOptions,
     session: Option<Session>,
 }
 
@@ -30,11 +34,11 @@ impl Component for CreateQuestions {
     type Properties = ();
 
     fn create(_: &Context<Self>) -> Self {
-        // CreateQuestions{questions: vec![Question{question: "Create a Question".to_owned(), answers: vec![Answer{answer:"Add an answer".to_owned(), id:"1".to_owned()}]}]}
         let questions = LocalStorage::get(KEY).unwrap_or_else(|_| vec![Question::new()]);
+        let options = LocalStorage::get(OPTIONS).unwrap_or_else(|_| QuestionOptions {title: "Questionnaire".to_owned()});
         let session = LocalStorage::get(SESSION_KEY).unwrap_or_else(|_| None);
 
-        CreateQuestions{questions, session: session}
+        CreateQuestions{questions, options: options, session: session}
     }
 
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -57,6 +61,11 @@ impl Component for CreateQuestions {
             Msg::RemoveQuestion => {
                 self.questions.pop();
                 LocalStorage::set(KEY, &self.questions).unwrap();
+                true
+            },
+            Msg::ChangeTitle(title) => {
+                self.options.title = title;
+                LocalStorage::set(OPTIONS, &self.options).unwrap();
                 true
             },
             Msg::ReceiveSession(s) => {
@@ -83,7 +92,10 @@ impl Component for CreateQuestions {
                 true
             },
             Msg::Submit => {
-                let payload = json!(self.questions).to_string();
+                let payload = json!(self).to_string();
+
+                log::info!("Payload: {:?}", payload);
+
                 ctx.link().send_future(async {
 
                     //TODO: .json should be used, wait for reqwasm update, serde_json can be removed afterwards
@@ -142,7 +154,7 @@ impl Component for CreateQuestions {
                     <Split gutter=true>
                         <SplitItem>
                             <Form>
-                                <TextInput placeholder="Title" disabled=true />    
+                                <TextInput placeholder="Title" onchange={ctx.link().callback(Msg::ChangeTitle)} value={self.options.title.clone()} />    
                                 <Switch label="Show each Question after an other" disabled=true />
                             </Form>
                         </SplitItem>

@@ -1,3 +1,4 @@
+use serde::Deserialize;
 use yew::prelude::*;
 use patternfly_yew::*;
 use reqwasm::http::Request;
@@ -6,13 +7,13 @@ use gloo::storage::{LocalStorage, Storage};
 use std::time::Duration;
 
 use super::view_question_form::ViewQuestionForm;
-use super::{Question, Session};
+use super::{Question, Session, QuestionOptions};
 use crate::answer::Vote;
 
 use crate::{API_URL, VOTE_KEY};
 
 pub enum Msg {
-    LoadQuestions(Vec<Question>),
+    LoadQuestions(ViewQuestions),
     ChangeVotes(Question),
     Submit,
     ReceiveSession(Session),
@@ -20,14 +21,17 @@ pub enum Msg {
 }
 
 
-#[derive(Clone, Properties, PartialEq)]
+#[derive(Properties, PartialEq)]
 pub struct ViewQuestionsProps {
     pub session: String,
 }
 
+#[derive(Deserialize)]
 pub struct ViewQuestions {
     questions: Vec<Question>,
+    options: QuestionOptions,
     session: Session,
+    #[serde(skip_deserializing)]
     vote_key: Option<Session>,
 }
 
@@ -37,6 +41,7 @@ impl Component for ViewQuestions {
 
     fn create(ctx: &Context<Self>) -> Self {
         let session = ctx.props().session.clone();
+
         ctx.link().send_future(async move {
             match Request::get(&format!("{}/question/{}", API_URL, session)).send().await {
                 Ok(r) => Msg::LoadQuestions(r.json().await.unwrap()),
@@ -54,6 +59,7 @@ impl Component for ViewQuestions {
         ViewQuestions {
             questions: vec![],
             session: Session{session: ctx.props().session.clone(), lifetime: 0},
+            options: QuestionOptions { title: "Questionnaire".to_owned() },
             vote_key: None,
         }
     }
@@ -98,7 +104,8 @@ impl Component for ViewQuestions {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::LoadQuestions(q) => {
-                self.questions = q;
+                self.questions = q.questions;
+                self.options = q.options;
 
                 for question in &mut self.questions {
                     for answer in &mut question.answers {

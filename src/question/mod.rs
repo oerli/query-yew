@@ -24,6 +24,11 @@ pub struct Question {
     pub key: String,
 }
 
+#[derive(Clone, PartialEq, Serialize, Deserialize, Debug, Default)]
+pub struct QuestionOptions {
+    pub title: String,
+}
+
 impl Question {
     pub fn new() -> Self {
         Question {

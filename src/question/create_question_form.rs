@@ -83,6 +83,7 @@ impl Component for CreateQuestionForm {
             <Split gutter=true>
                 <SplitItem>
                     <Switch label="Multiple Answers possible" disabled=true/><br/>
+                    <Switch label="Yes/No Answer" disabled=true/><br/>
                     <Switch label="Answers provided must be correct" disabled=true/>
                 </SplitItem>
                 <SplitItem fill=true>

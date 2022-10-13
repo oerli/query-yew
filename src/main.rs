@@ -9,6 +9,7 @@ mod result;
 use result::ViewResults;
 
 pub const KEY: &str = "rs.query.questions";
+pub const OPTIONS: &str = "rs.query.options";
 pub const SESSION_KEY: &str = "rs.query.session";
 pub const VOTE_KEY: &str = "rs.query.vote";
 
