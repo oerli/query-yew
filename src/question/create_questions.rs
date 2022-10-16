@@ -8,7 +8,7 @@ use std::time::Duration;
 use chrono::{NaiveDateTime, DateTime, Utc};
 
 use super::create_question_form::CreateQuestionForm;
-use super::{Question, QuestionOptions, Session};
+use super::{Question, QuestionOptions, Session, Header};
 use crate::{KEY, OPTIONS, SESSION_KEY, API_URL, GUI_URL};
 
 pub enum Msg {
@@ -168,6 +168,7 @@ impl Component for CreateQuestions {
 
         html! {
             <>
+                <Header title={self.options.title.clone()}/>
                 {question_list}
                 <StackItem>
                     <Split gutter=true>

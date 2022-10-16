@@ -7,6 +7,7 @@ mod answer;
 use question::{ViewQuestions, CreateQuestions};
 mod result;
 use result::ViewResults;
+mod header;
 
 pub const KEY: &str = "rs.query.questions";
 pub const OPTIONS: &str = "rs.query.options";
@@ -66,45 +67,12 @@ fn switch(routes: &Route) -> Html {
 #[function_component(App)]
 fn app() -> Html {
     html! {
-        <Stack>
-            <StackItem>
-            <div class="pf-u-background-color-active-color-100">
-            <div class="pf-u-color-light-200">
-            <div class="pf-u-box-shadow-md">
-            
-                <Split>
-                <SplitItem ></SplitItem>
-                    <SplitItem fill=true>
-                        <div class="pf-u-m-sm">    
-                        <div class="pf-u-text-align-center">
-                            <Title level={Level::H1}>{"Questionnaire"}</Title>
-                        </div>
-                        </div>
-                    </SplitItem>
-                    
-                    <SplitItem>
-                        <div class="pf-u-m-sm">
-                        <div class="pf-u-text-align-center">
-                            <a href="https://github.com/oerli/query-yew" class="pf-u-color-light-200">
-                                <Title level={Level::H1}>
-                                    <i class="fas fa-bug" aria-hidden="true"></i>
-                                </Title>
-                            </a>
-                        </div>
-                        </div>
-                    </SplitItem>
-                </Split>
-            </div>
-            </div>
-            </div>
-            </StackItem>
-            <StackItem>
-                <BrowserRouter>
-                    <ToastViewer/>
-                    <yew_router::Switch<Route> render={yew_router::Switch::render(switch)} />
-                </BrowserRouter>
-            </StackItem>
-        </Stack>
+
+        <BrowserRouter>
+            <ToastViewer/>
+            <yew_router::Switch<Route> render={yew_router::Switch::render(switch)} />
+        </BrowserRouter>
+
     }
 }
 

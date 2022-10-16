@@ -7,7 +7,7 @@ use gloo::storage::{LocalStorage, Storage};
 use std::time::Duration;
 
 use super::view_question_form::ViewQuestionForm;
-use super::{Question, Session, QuestionOptions};
+use super::{Question, Session, QuestionOptions, Header};
 use crate::answer::Vote;
 
 use crate::{API_URL, VOTE_KEY};
@@ -61,43 +61,6 @@ impl Component for ViewQuestions {
             session: Session{session: ctx.props().session.clone(), lifetime: 0},
             options: QuestionOptions { title: "Questionnaire".to_owned() },
             vote_key: None,
-        }
-    }
-
-    fn view(&self, ctx: &Context<Self>) -> Html {
-        let question_list: Html = self.questions.iter().map(|question| {
-            html! {
-                <StackItem fill=true>
-                    <Card>
-                        <Form>
-                            <ViewQuestionForm question={question.clone()} on_change_vote={ctx.link().callback(Msg::ChangeVotes)}/>
-                        </Form>
-                    </Card>
-                </StackItem>
-                
-            }
-        }).collect();
-
-        let onclick_submit = ctx.link().callback(|_| Msg::Submit);
-
-        html! {
-            <>
-                {question_list}
-                <StackItem>
-                    <Split gutter=true>
-                        <SplitItem fill=true />
-                        <SplitItem>
-                            <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
-                                match self.vote_key {
-                                    Some(_) => true,
-                                    None => false,
-                                }
-                            }/>
-                        </SplitItem>
-                        <SplitItem fill=true />
-                    </Split>
-                </StackItem>
-            </>
         }
     }
 
@@ -183,6 +146,44 @@ impl Component for ViewQuestions {
                 ToastDispatcher::new().toast(t);
                 false
             }
+        }
+    }
+
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let question_list: Html = self.questions.iter().map(|question| {
+            html! {
+                <StackItem fill=true>
+                    <Card>
+                        <Form>
+                            <ViewQuestionForm question={question.clone()} on_change_vote={ctx.link().callback(Msg::ChangeVotes)}/>
+                        </Form>
+                    </Card>
+                </StackItem>
+                
+            }
+        }).collect();
+
+        let onclick_submit = ctx.link().callback(|_| Msg::Submit);
+
+        html! {
+            <>
+                <Header title={self.options.title.clone()}/>
+                {question_list}
+                <StackItem>
+                    <Split gutter=true>
+                        <SplitItem fill=true />
+                        <SplitItem>
+                            <Button icon={Icon::CheckCircle} label="Submit" variant={Variant::Primary} onclick={onclick_submit} disabled={
+                                match self.vote_key {
+                                    Some(_) => true,
+                                    None => false,
+                                }
+                            }/>
+                        </SplitItem>
+                        <SplitItem fill=true />
+                    </Split>
+                </StackItem>
+            </>
         }
     }
 }

@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use rand::{distributions::Alphanumeric, Rng};
 
+use super::header::Header;
 use super::answer::Answer;
 
 mod view_questions;

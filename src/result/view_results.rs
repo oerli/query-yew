@@ -8,6 +8,7 @@ use serde::Deserialize;
 use crate::question::{Question, Session};
 use super::Score;
 use crate::answer::Vote;
+use crate::header::Header;
 
 use crate::API_URL;
 
@@ -53,65 +54,6 @@ impl Component for ViewResults {
             description: HashMap::new(),
             count: HashMap::new(),
         }
-    }
-
-    fn view(&self, _ctx: &Context<Self>) -> Html {
-        self.questions.iter().map(|question| {
-            let header = html_nested! {
-                <TableHeader>
-                    <TableColumn label={question.question.clone()}/>
-                    <TableColumn label="Answer"/>
-                    <TableColumn label="Count"/>
-                    <TableColumn label="Total"/>
-                </TableHeader>
-            };
-            
-            let scores: Vec<Score> = question.answers.iter().filter_map(|answer| {
-                match self.count.get(&question.key) {
-                    Some(q) => match q.get(&answer.key) {
-                        Some(a) => {
-                            let mut total = 0 as usize;
-                            for (_, c) in a.iter() {
-                                total = total + c;
-                            }
-                            
-                            Some(
-                                a.iter().map(move |(s, c)| {
-                                    Score {
-                                        answer: answer.answer.clone(),
-                                        vote: s.clone(),
-                                        count: c.clone(),
-                                        total: total.clone(),
-                                    }
-                                })
-                            )
-                        },
-                        None => {
-                            log::debug!("{:?}", &answer.key);
-                            None
-                        },
-                    },
-                    None => {
-                        log::debug!("{:?}", &question.key);
-                        None
-                    },
-                }
-            }).flatten().collect();                
-
-            let model: SharedTableModel<_> = scores.clone().into();
-    
-            html! {
-                <>
-                    <Table<SharedTableModel<Score>>
-                        mode={TableMode::Compact}
-                        header={header}
-                        entries={model}
-                        >
-                    </Table<SharedTableModel<Score>>>
-                </>
-            }
-        }).collect()
-
     }
 
     fn update(&mut self, _ctx: &Context<Self>, msg: Self::Message) -> bool {
@@ -173,5 +115,65 @@ impl Component for ViewResults {
                 true
             }
         }
+    }
+
+    fn view(&self, _ctx: &Context<Self>) -> Html {
+        self.questions.iter().map(|question| {
+            let header = html_nested! {
+                <TableHeader>
+                    <TableColumn label={question.question.clone()}/>
+                    <TableColumn label="Answer"/>
+                    <TableColumn label="Count"/>
+                    <TableColumn label="Total"/>
+                </TableHeader>
+            };
+            
+            let scores: Vec<Score> = question.answers.iter().filter_map(|answer| {
+                match self.count.get(&question.key) {
+                    Some(q) => match q.get(&answer.key) {
+                        Some(a) => {
+                            let mut total = 0 as usize;
+                            for (_, c) in a.iter() {
+                                total = total + c;
+                            }
+                            
+                            Some(
+                                a.iter().map(move |(s, c)| {
+                                    Score {
+                                        answer: answer.answer.clone(),
+                                        vote: s.clone(),
+                                        count: c.clone(),
+                                        total: total.clone(),
+                                    }
+                                })
+                            )
+                        },
+                        None => {
+                            log::debug!("{:?}", &answer.key);
+                            None
+                        },
+                    },
+                    None => {
+                        log::debug!("{:?}", &question.key);
+                        None
+                    },
+                }
+            }).flatten().collect();                
+
+            let model: SharedTableModel<_> = scores.clone().into();
+    
+            html! {
+                <>
+                <Header title={self.session.session.clone()}/>
+                    <Table<SharedTableModel<Score>>
+                        mode={TableMode::Compact}
+                        header={header}
+                        entries={model}
+                        >
+                    </Table<SharedTableModel<Score>>>
+                </>
+            }
+        }).collect()
+
     }
 }
