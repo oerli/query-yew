@@ -7,6 +7,8 @@ use gloo::storage::{LocalStorage, Storage};
 use std::time::Duration;
 use chrono::{NaiveDateTime, DateTime, Utc};
 
+use query::Questionnaire;
+
 use super::create_question_form::CreateQuestionForm;
 use super::{Question, QuestionOptions, Session, Header};
 use crate::{KEY, OPTIONS, SESSION_KEY, API_URL, GUI_URL};
@@ -22,6 +24,7 @@ pub enum Msg {
     ResetSession,
 }
 
+//todo repalce by quetsionnaire
 #[derive(Serialize, Deserialize, Default)]
 pub struct CreateQuestions {
     questions: Vec<Question>,
@@ -34,7 +37,7 @@ impl Component for CreateQuestions {
     type Properties = ();
 
     fn create(_: &Context<Self>) -> Self {
-        let questions = LocalStorage::get(KEY).unwrap_or_else(|_| vec![Question::new()]);
+        let questions = LocalStorage::get(KEY).unwrap_or_else(|_| vec![Question::empty()]);
         let options = LocalStorage::get(OPTIONS).unwrap_or_else(|_| QuestionOptions {title: "Questionnaire".to_owned()});
         let session = LocalStorage::get(SESSION_KEY).unwrap_or_else(|_| None);
 
@@ -44,7 +47,7 @@ impl Component for CreateQuestions {
     fn update(&mut self, ctx: &Context<Self>, msg: Self::Message) -> bool {
         match msg {
             Msg::AppendQuestion => {
-                self.questions.push(Question::new());
+                self.questions.push(Question::empty());
                 LocalStorage::set(KEY, &self.questions).unwrap();
                 true
             },
